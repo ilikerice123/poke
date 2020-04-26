@@ -10,8 +10,8 @@ ser = serial.Serial(
                bytesize=serial.EIGHTBITS,
                timeout=5
            )
-
-ser.write("AT\r\n")
+#command = sys.argv[1] + "\r\n"
+ser.write("AT+NAME=poke\r\n".encode())
 response = ser.readline()
-print(response)
+print(response.decode())
 
