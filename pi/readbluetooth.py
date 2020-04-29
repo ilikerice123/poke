@@ -1,6 +1,7 @@
 import os, sys, time, json, wireless
 import serial
 import time
+import requests
 
 ser = serial.Serial(
                 port='/dev/ttyUSB0',
@@ -11,13 +12,14 @@ ser = serial.Serial(
                 timeout=5
             )
 
-while 1:
+while True:
+    response = {}
     try:
         json_command = ser.readline().decode()
         response = json.loads(json_command)
     except:
         print("error")
-    if response["command"]:
+    if response.get('command', '') is not '':
         break
 
 print(response["command"])
@@ -26,3 +28,6 @@ print(response["password"])
 
 wire = Wireless()
 wire.connect(ssid=y["ssid"], password=y["password"])
+response = requests.get('http://hiscore.runescape.com/index_lite.ws?player=zezima')
+print (response.status_code)
+print (response.content)
