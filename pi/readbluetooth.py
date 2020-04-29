@@ -11,13 +11,14 @@ ser = serial.Serial(
                 timeout=5
             )
 
-while 1:
+while True:
+    response = {}
     try:
         json_command = ser.readline().decode()
         response = json.loads(json_command)
     except:
         print("error")
-    if response["command"]:
+    if response.get('command', '') is not '':
         break
 
 print(response["command"])
