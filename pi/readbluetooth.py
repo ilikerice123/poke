@@ -1,7 +1,8 @@
-import os, sys, time, json, wireless
+import os, sys, time, json
 import serial
 import time
 import requests
+import wifi_controller as wifi
 
 ser = serial.Serial(
                 port='/dev/ttyUSB0',
@@ -26,8 +27,12 @@ print(response["command"])
 print(response["ssid"])
 print(response["password"])
 
-wire = wireless.Wireless()
-wire.connect(ssid=response["ssid"], password=response["password"])
+wifi = wifi.Connect(response["ssid"], response["password"])
+if wifi:
+    print(wifi)
+else
+    print("wifi connect failed")
+
 response = requests.get('http://google.com')
 print (response.status_code)
 print (response.content)
