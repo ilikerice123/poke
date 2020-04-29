@@ -1,6 +1,4 @@
-import os, sys
-import serial
-import time
+import os, sys, serial, time, json, wireless
 
 ser = serial.Serial(
                port='/dev/ttyUSB0',
@@ -16,5 +14,9 @@ else:
     command = "AT\r\n"
 
 ser.write(command.encode())
-response = ser.readline()
-print(response.decode())
+response = ser.readline().decode()
+print(response)
+
+
+
+
