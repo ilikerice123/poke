@@ -12,17 +12,17 @@ ser = serial.Serial(
             )
 
 while 1:
-    json_command = ser.readline().decode()
     try:
+        json_command = ser.readline().decode()
         response = json.loads(json_command)
     except:
         print("error")
+    if response["command"]:
+        break
 
-response = ser.readline()
-y = json.loads(response.decode())
-print(y["command"])
-print(y["ssid"])
-print(y["password"])
+print(response["command"])
+print(response["ssid"])
+print(response["password"])
 
 wire = Wireless()
 wire.connect(ssid=y["ssid"], password=y["password"])
