@@ -6,6 +6,8 @@ from timeloop import Timeloop
 from datetime import timedelta
 import bt_serial as bluetooth
 import requests
+import api
+import time
 
 ID_FILE = 'poke.id'
 class States(enum.Enum):
@@ -41,7 +43,23 @@ def send_state():
 
 def wait():
     if(poke_id is None):
-        #get poke id
+        resp = {'status': api.GENERIC_ERROR}
+        while(resp['status'] == api.GENERIC_ERROR)
+            resp = api.request_id()
+            if(resp['status'] == api.GENERIC_ERROR):
+                # so we don't bombard server if something is wrong
+                time.sleep(1)
+
+        if(resp['status'] == api.CONNECTION_ERROR):
+            # connection error? try again
+            return States.Wifi
+        else:
+            set_id(resp['id'])
+    
+    resp = api.poll_poke(poke_id)
+    
+
+
 
     
 
@@ -52,13 +70,14 @@ def flash():
 def get_id():
     try:
         file = open(ID_FILE, mode='r')
-        id = file.read()
+        poke_id = file.read()
         file.close()
         return id
     except FileNotFoundError:
         return None
 
 def set_id(id):
+    poke_id = id
     file = open(ID_FILE, mode='w')
     file.write(id)
     file.close()
