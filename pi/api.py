@@ -17,16 +17,16 @@ def request_id():
 # when this returns, either connection error, or poke is true
 def poll_poke(id):
     request = {}
-    while((request.get('poke', False) != True) and (request.get('status', None) != 'no connection')):
+    while((request.get('poke', None) != True) and (request.get('status', None) != CONNECTION_ERROR)):
         try:
             # no timeout
             r = requests.get(SERVER_URL + '/device/' + id + '/poke', timeout=None)
             request = r.json()
         except requests.ConnectionError: 
             # assume something wrong with internet connection
-            return {'status': CONNECTION_ERROR, 'poke': False}
+            return {'status': CONNECTION_ERROR, 'poke': None}
         except:
-            return {'status': GENERIC_ERROR, 'poke': False}
+            return {'status': GENERIC_ERROR, 'poke': None}
 
     return request
 

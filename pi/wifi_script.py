@@ -3,7 +3,7 @@ import bt_serial as bluetooth
 
 WPA_FILE = 'wifi.conf'
 
-def connect_wifi():
+def connect():
     proc = subprocess.Popen(['sudo', 'ifconfig', 'wlan0', 'up'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     err = proc.wait()
     if(err != 0):
@@ -49,4 +49,4 @@ def connect_wifi():
         return True
 
 if __name__ == "__main__":
-    connect_wifi()
+    connect()

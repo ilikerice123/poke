@@ -1,13 +1,16 @@
 import os, sys, time, json
 import serial
 import enum
-from wifi_script import connect_wifi
-from timeloop import Timeloop
-from datetime import timedelta
-import bt_serial as bluetooth
 import requests
 import api
 import time
+
+from timeloop import Timeloop
+from datetime import timedelta
+
+import wifi_script as wifi
+import bt_serial as bluetooth
+import leds
 
 ID_FILE = 'poke.id'
 class States(enum.Enum):
@@ -24,7 +27,7 @@ error = "no error"
 while True:
     if(state is States.Wifi):
         while True:
-            if(connect_wifi()):
+            if(wifi.connect()):
                 break
         next_state = States.Wait
     elif(state is States.Wait):
@@ -43,29 +46,30 @@ def send_state():
 
 def wait():
     if(poke_id is None):
-        resp = {'status': api.GENERIC_ERROR}
-        while(resp['status'] == api.GENERIC_ERROR)
+        resp = api.request_id()
+        while(resp['status'] == api.GENERIC_ERROR):
+            # so we don't bombard server if something is wrong
+            time.sleep(1)
             resp = api.request_id()
-            if(resp['status'] == api.GENERIC_ERROR):
-                # so we don't bombard server if something is wrong
-                time.sleep(1)
 
         if(resp['status'] == api.CONNECTION_ERROR):
-            # connection error? try again
             return States.Wifi
         else:
             set_id(resp['id'])
     
     resp = api.poll_poke(poke_id)
-    
+    while(resp['status'] == api.GENERIC_ERROR):
+        # so we don't bombard server if something is wrong
+        time.sleep(1)
+        resp = api.poll_poke(poke_id)
 
-
-
-    
-
+    if(resp['status'] == api.CONNECTION_ERROR):
+        return States.Wifi
+    else:
+        return States.Flash    
 
 def flash():
-    
+    return States.Wait
 
 def get_id():
     try:
