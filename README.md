@@ -14,6 +14,9 @@ connect bt
 
 SHOULD BE CONNECTED TO THE INTERNET NOW
 
+#### Raspi Pinout
+![pinout](files/pipinout.png)
+
 #### State
 periodically send the state to the BT controller
 
