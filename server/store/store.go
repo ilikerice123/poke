@@ -85,3 +85,15 @@ func WaitPoke(id string) (*Poke, *Err) {
 	<-poke.Ch
 	return poke, nil
 }
+
+//ListIDs lists the ids of all the devices
+func ListIDs() []string {
+	list := make([]string, len(pokeStore))
+
+	i := 0
+	for id := range pokeStore {
+		list[i] = id
+		i++
+	}
+	return list
+}

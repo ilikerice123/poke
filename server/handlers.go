@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -44,6 +45,18 @@ func CheckDevice(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+//ListDevices lists all the devices
+func ListDevices(w http.ResponseWriter, r *http.Request) {
+	if !BasicAuth(w, r) {
+		return
+	}
+
+	ids := store.ListIDs()
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"ids": ids,
+	})
+}
+
 func handleError(w http.ResponseWriter, err *store.Err) {
 	switch err.Code {
 	case store.NotFound:
@@ -51,4 +64,18 @@ func handleError(w http.ResponseWriter, err *store.Err) {
 			"status": "device not found",
 		})
 	}
+}
+
+//BasicAuth returns True if authorized, and false otherwise, depends on User and Auth variable
+func BasicAuth(w http.ResponseWriter, r *http.Request) bool {
+	user, pass, ok := r.BasicAuth()
+
+	if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(User)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(Pass)) != 1 {
+		w.Header().Set("WWW-Authenticate", `Basic realm="Provide User and Pass"`)
+		w.WriteHeader(401)
+		w.Write([]byte("Unauthorised.\n"))
+		return false
+	}
+
+	return true
 }
