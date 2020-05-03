@@ -14,22 +14,14 @@ import bt_serial as bluetooth
 import leds
 
 ID_FILE = 'poke.id'
+poke_id = None
 
 def wait():
     print(poke_id)
     if(poke_id is None):
-        print("pokeid is null")
-        resp = api.request_id()
-        while(resp['status'] == api.GENERIC_ERROR):
-            # so we don't bombard server if something is wrong
-            time.sleep(1)
-            resp = api.request_id()
-
-        if(resp['status'] == api.CONNECTION_ERROR):
-            return States.Wifi
-        else:
-            set_id(resp['id'])
+        return States.Wifi
     
+    print("polling poke with id " + poke_id)
     resp = api.poll_poke(poke_id)
     if(resp['status'] == api.CONNECTION_ERROR):
         return States.Wifi
@@ -46,21 +38,19 @@ def get_id():
         file.close()
         return poke_id
     except FileNotFoundError:
-        return None
+        print("pokeid is null")
+        resp = api.request_id()
+        while(resp['status'] == api.GENERIC_ERROR):
+            # so we don't bombard server if something is wrong
+            time.sleep(1)
+            resp = api.request_id()
 
-def set_id(id):
-    print("setting id to " + id)
-    poke_id = id
-    file = open(ID_FILE, mode='w')
-    file.write(id)
-    file.close()
-
-if(len(sys.argv) < 1):
-    tl = Timeloop()
-    @tl.job(interval=timedelta(seconds=1))
-    def send_state():
-        request = json.dumps({'command': 'state', 'state': state})
-        bluetooth.send_bt_data(request)
+        new_id = resp.get('id', None)
+        file = open(ID_FILE, mode='w')
+        file.write(new_id)
+        print("done setting id")
+        file.close()
+        return new_id
 
 state = States.Wifi
 poke_id = get_id()
@@ -80,6 +70,13 @@ while True:
         next_state = wait()
     else:
         print("transitioning to flash")
-        next_state = flash()
+        next_state = leds.flash()
 
     state = next_state
+
+if(len(sys.argv) < 1):
+    tl = Timeloop()
+    @tl.job(interval=timedelta(seconds=1))
+    def send_state():
+        request = json.dumps({'command': 'state', 'state': state})
+        bluetooth.send_bt_data(request)

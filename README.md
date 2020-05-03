@@ -60,7 +60,10 @@ periodically send the state to the BT controller
 ```
 
 ### TODO:
-refactor api.py in tandem with logic.py to be more legible
-refactor the way poke_id is assigned
-
-    
+- refactor api.py in tandem with logic.py to be more legible
+- refactor the way poke_id is assigned (refactor out of globa var?)
+- fix not found errors on go server
+- fix poke_id getting requested right away
+- fix the way poke = true is propogated/get rid of it
+- remove unnecessary comments in pi script
+- add better error handling in pi script
