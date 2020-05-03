@@ -1,6 +1,9 @@
 import requests
 
-SERVER_URL = ''
+SERVER_FILE='server.txt'
+file = open(SERVER_FILE, mode='r')
+SERVER_URL = file.read()
+
 GENERIC_ERROR = 'err'
 CONNECTION_ERROR = 'no connection'
 

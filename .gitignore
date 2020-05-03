@@ -3,3 +3,4 @@ wifi.conf
 poke.id
 __pycache__
 *.exe
+server.txt

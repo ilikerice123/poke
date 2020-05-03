@@ -26,7 +26,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	deviceRouter := r.PathPrefix("/device").Subrouter()
+	deviceRouter := r.PathPrefix("/devices").Subrouter()
 	deviceRouter.HandleFunc("/{id}/poke", PokeDevice).Methods("POST")
 	deviceRouter.HandleFunc("/{id}/poke", CheckDevice).Methods("GET")
 	deviceRouter.HandleFunc("/", NewDevice).Methods("POST")

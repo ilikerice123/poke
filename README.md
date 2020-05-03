@@ -26,7 +26,6 @@ periodically send the state to the BT controller
 - `POST /device`
 ```json
 {
-    "status":"ok",
     "id": "<uid>" 
 }
 ```
@@ -46,13 +45,11 @@ periodically send the state to the BT controller
 - `GET /device/:id/poke` with timeout
 ```json
 {
-    "status":"ok",
     "poke": true
 }
 ```
 ```json
 {
-    "status":"ok",
     "poke": false
 }
 ```
