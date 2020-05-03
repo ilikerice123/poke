@@ -43,8 +43,9 @@ func Init() {
 //NewPoke creates a new PokeStore
 func NewPoke() *Poke {
 	poke := &Poke{
-		ID:    uuid.New().String(),
-		Ch:    make(chan bool),
+		ID: uuid.New().String(),
+		//with a channel size of 5, there is implicitly a 5 * breathe time barrier of pokes u can send in a row
+		Ch:    make(chan bool, 5),
 		Poked: false,
 	}
 	pokeStore[poke.ID] = poke
@@ -58,11 +59,7 @@ func SendPoke(id string) *Err {
 		return &Err{Msg: "id not found", Code: NotFound}
 	}
 
-	//send poke if there's not a poke already in the queue
-	if len(poke.Ch) < 1 {
-		poke.Ch <- true
-	}
-
+	poke.Ch <- true
 	poke.Poked = true
 	time.AfterFunc(10*time.Second, func() {
 		poke.Poked = false

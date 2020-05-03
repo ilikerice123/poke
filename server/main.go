@@ -31,6 +31,8 @@ func main() {
 	deviceRouter.HandleFunc("/{id}/poke", CheckDevice).Methods("GET")
 	deviceRouter.HandleFunc("", NewDevice).Methods("POST")
 	deviceRouter.HandleFunc("", ListDevices).Methods("GET")
+	deviceRouter.HandleFunc("/", NewDevice).Methods("POST")
+	deviceRouter.HandleFunc("/", ListDevices).Methods("GET")
 
 	srv := &http.Server{
 		Handler: r,
