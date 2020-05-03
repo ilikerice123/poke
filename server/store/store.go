@@ -61,7 +61,7 @@ func SendPoke(id string) *Err {
 
 	poke.Ch <- true
 	poke.Poked = true
-	time.AfterFunc(10*time.Second, func() {
+	time.AfterFunc(2*time.Second, func() {
 		poke.Poked = false
 	})
 
