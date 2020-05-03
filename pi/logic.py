@@ -34,13 +34,6 @@ while True:
 
     state = next_state
 
-tl = Timeloop()
-
-@tl.job(interval=timedelta(seconds=1))
-def send_state():
-    request = json.dumps({'command': 'state', 'state': state})
-    bluetooth.send_bt_data(request)
-
 def wait():
     if(poke_id is None):
         resp = api.request_id()
@@ -82,3 +75,9 @@ def set_id(id):
     file = open(ID_FILE, mode='w')
     file.write(id)
     file.close()
+
+tl = Timeloop()
+@tl.job(interval=timedelta(seconds=1))
+def send_state():
+    request = json.dumps({'command': 'state', 'state': state})
+    bluetooth.send_bt_data(request)
