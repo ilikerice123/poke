@@ -13,6 +13,7 @@ import (
 func NewDevice(w http.ResponseWriter, r *http.Request) {
 	poke := store.NewPoke()
 	writeJSON(poke, w)
+	w.WriteHeader(http.StatusOK)
 }
 
 //PokeDevice pokes a device
@@ -25,6 +26,7 @@ func PokeDevice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(map[string]interface{}{"status": "ok"}, w)
+	w.WriteHeader(http.StatusOK)
 }
 
 //CheckDevice checks a device for poke
@@ -36,6 +38,7 @@ func CheckDevice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(poke, w)
+	w.WriteHeader(http.StatusOK)
 }
 
 //ListDevices lists all the devices
@@ -46,16 +49,17 @@ func ListDevices(w http.ResponseWriter, r *http.Request) {
 
 	ids := store.ListIDs()
 	writeJSON(map[string]interface{}{"ids": ids}, w)
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleError(w http.ResponseWriter, err *store.Err) {
 	switch err.Code {
 	case store.NotFound:
-		w.WriteHeader(http.StatusNotFound)
 		writeJSON(map[string]interface{}{"status": "device not found"}, w)
+		w.WriteHeader(http.StatusNotFound)
 	default:
-		w.WriteHeader(http.StatusInternalServerError)
 		writeJSON(map[string]interface{}{"status": "server error"}, w)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
 
