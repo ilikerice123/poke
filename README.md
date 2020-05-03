@@ -59,4 +59,8 @@ periodically send the state to the BT controller
 }
 ```
 
+### TODO:
+refactor api.py in tandem with logic.py to be more legible
+refactor the way poke_id is assigned
+
     
