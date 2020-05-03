@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -25,12 +26,10 @@ func main() {
 
 	r := mux.NewRouter()
 
-	deviceRouter := mux.NewRouter()
-	r.Handle("/device", deviceRouter)
-
+	deviceRouter := r.PathPrefix("/device").Subrouter()
+	deviceRouter.HandleFunc("/{id}/poke", PokeDevice).Methods("POST")
+	deviceRouter.HandleFunc("/{id}/poke", CheckDevice).Methods("GET")
 	deviceRouter.HandleFunc("/", NewDevice).Methods("POST")
-	deviceRouter.HandleFunc("{id}/poke", PokeDevice).Methods("POST")
-	deviceRouter.HandleFunc("{id}/poke", CheckDevice).Methods("GET")
 	deviceRouter.HandleFunc("/", ListDevices).Methods("GET")
 
 	srv := &http.Server{
@@ -40,7 +39,7 @@ func main() {
 		WriteTimeout: 24 * time.Hour,
 		ReadTimeout:  24 * time.Hour,
 	}
-	srv.ListenAndServe()
+	log.Fatal(srv.ListenAndServe())
 	wait := make(chan int, 1)
 	<-wait
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/subtle"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,69 +12,67 @@ import (
 //NewDevice creates a new poke device
 func NewDevice(w http.ResponseWriter, r *http.Request) {
 	poke := store.NewPoke()
-	json.NewEncoder(w).Encode(poke)
+	writeJSON(poke, w)
 }
 
 //PokeDevice pokes a device
 func PokeDevice(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	fmt.Println(id)
 	err := store.SendPoke(id)
 	if err != nil {
 		handleError(w, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status": "ok",
-	})
-	return
+	writeJSON(map[string]interface{}{"status": "ok"}, w)
 }
 
 //CheckDevice checks a device for poke
 func CheckDevice(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	fmt.Println(id)
 	poke, err := store.WaitPoke(id)
 	if err != nil {
 		handleError(w, err)
 	}
 
-	json.NewEncoder(w).Encode(poke)
-	return
+	writeJSON(poke, w)
 }
 
 //ListDevices lists all the devices
 func ListDevices(w http.ResponseWriter, r *http.Request) {
-	if !BasicAuth(w, r) {
+	if !basicAuth(w, r) {
 		return
 	}
 
 	ids := store.ListIDs()
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"ids": ids,
-	})
+	writeJSON(map[string]interface{}{"ids": ids}, w)
 }
 
 func handleError(w http.ResponseWriter, err *store.Err) {
 	switch err.Code {
 	case store.NotFound:
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"status": "device not found",
-		})
+		w.WriteHeader(http.StatusNotFound)
+		writeJSON(map[string]interface{}{"status": "device not found"}, w)
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		writeJSON(map[string]interface{}{"status": "server error"}, w)
 	}
 }
 
-//BasicAuth returns True if authorized, and false otherwise, depends on User and Auth variable
-func BasicAuth(w http.ResponseWriter, r *http.Request) bool {
+func basicAuth(w http.ResponseWriter, r *http.Request) bool {
 	user, pass, ok := r.BasicAuth()
 
 	if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(User)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(Pass)) != 1 {
 		w.Header().Set("WWW-Authenticate", `Basic realm="Provide User and Pass"`)
 		w.WriteHeader(401)
-		w.Write([]byte("Unauthorised.\n"))
+		w.Write([]byte("Unauthorized.\n"))
 		return false
 	}
 
 	return true
+}
+
+func writeJSON(object interface{}, w http.ResponseWriter) {
+	json.NewEncoder(w).Encode(object)
+	w.Header().Set("Content-Type", "application/json")
 }
