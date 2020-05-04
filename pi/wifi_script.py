@@ -50,6 +50,7 @@ def connect():
 
 def has_wifi():
     proc = subprocess.run(['./check_wifi.sh'], stdout=subprocess.PIPE)
+    print("checking wifi got result: " + proc.stdout)
     return proc.stdout == 'ok'
 
 if __name__ == "__main__":
