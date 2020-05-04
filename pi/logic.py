@@ -15,11 +15,11 @@ import leds
 import api
 
 ID_FILE = 'poke.id'
-poke_id = None
+poke_id = ''
 
 def wait():
     p_id = get_id()
-    if(p_id is None):
+    if(p_id == ''):
         return States.Wifi
     
     print("polling poke with id " + p_id)
@@ -33,7 +33,7 @@ def flash():
     return States.Wait
 
 def get_id():
-    if poke_id != None:
+    if(poke_id == ''):
         return poke_id
 
     try:
