@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/subtle"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -49,6 +50,7 @@ func ListDevices(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleError(w http.ResponseWriter, err *store.Err) {
+	fmt.Println("Handling error")
 	switch err.Code {
 	case store.NotFound:
 		writeJSON(map[string]interface{}{"status": "device not found"}, w)

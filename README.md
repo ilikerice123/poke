@@ -14,15 +14,27 @@ connect bt
 
 SHOULD BE CONNECTED TO THE INTERNET NOW
 
-#### Raspi Pinout
+## files/
+used to store random files
+
+## pi/
+Raspi Pinout (PI GPIO uses broadcom (BCM) pin notation)
+
 ![pinout](files/pipinout.png)
 
-#### State
-periodically send the state to the BT controller
+- `check_wifi.sh` script that echos ok or error based on whether it can ping google.com (connection test)
+- `pigpio.sh` runs pi-gpio daemon for generation of pwm signals
+- `wpa_script.sh` generates wpa file, and attempts to connect to WPA enabled router
+- `bt_serial.py` provides interface with serial bt device
+- `api.py` provides interface with server
+- `leds.py` provides interface to leds
+- `logic.py` main file that runs the state machine logic
+- `state.py` stores class for state
+- `wifi_script.py` provides interface to connect to internet
 
+## server/
 
-#### Server API
-
+Server API:
 - `POST /device`
 ```json
 {
@@ -59,11 +71,9 @@ periodically send the state to the BT controller
 }
 ```
 
-### TODO:
-- refactor api.py in tandem with logic.py to be more legible
-- refactor the way poke_id is assigned (refactor out of globa var?)
-- fix not found errors on go server
-- fix poke_id getting requested right away
-- fix the way poke = true is propogated/get rid of it
-- remove unnecessary comments in pi script
-- add better error handling in pi script
+#### TODO:
+- refactor api.py in tandem with logic.py to be more legible, better error handling
+- refactor the way poke_id is assigned (refactor out of globa var?) *
+- fix not found errors on go server *
+- remove unnecessary prints in pi script
+

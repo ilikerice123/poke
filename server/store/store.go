@@ -1,6 +1,7 @@
 package store
 
 import (
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,9 +27,9 @@ func (err *Err) Error() string {
 
 //Poke used to store status
 type Poke struct {
-	ID    string    `json:"id"`
-	Ch    chan bool `json:"-"`
-	Poked bool      `json:"poke"`
+	ID    string     `json:"id"`
+	Cv    *sync.Cond `json:"-"`
+	Poked bool       `json:"poke"`
 }
 
 //PokeStore stores pokes
@@ -43,9 +44,8 @@ func Init() {
 //NewPoke creates a new PokeStore
 func NewPoke() *Poke {
 	poke := &Poke{
-		ID: uuid.New().String(),
-		//with a channel size of 5, there is implicitly a 5 * breathe time barrier of pokes u can send in a row
-		Ch:    make(chan bool, 5),
+		ID:    uuid.New().String(),
+		Cv:    sync.NewCond(&sync.Mutex{}),
 		Poked: false,
 	}
 	pokeStore[poke.ID] = poke
@@ -59,7 +59,7 @@ func SendPoke(id string) *Err {
 		return &Err{Msg: "id not found", Code: NotFound}
 	}
 
-	poke.Ch <- true
+	poke.Cv.Broadcast()
 	poke.Poked = true
 	time.AfterFunc(2*time.Second, func() {
 		poke.Poked = false
@@ -78,8 +78,7 @@ func WaitPoke(id string) (*Poke, *Err) {
 		return poke, nil
 	}
 
-	//wait for poke
-	<-poke.Ch
+	poke.Cv.Wait()
 	return poke, nil
 }
 

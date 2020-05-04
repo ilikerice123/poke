@@ -48,5 +48,9 @@ def connect():
     if(completed_proc.returncode == 0):
         return True
 
+def has_wifi():
+    proc = subprocess.run(['./check_wifi.sh'], stdout=subprocess.PIPE)
+    return proc.stdout == 'ok'
+
 if __name__ == "__main__":
     connect()
