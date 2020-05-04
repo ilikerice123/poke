@@ -80,9 +80,10 @@ func WaitPoke(id string) (*Poke, *Err) {
 		return poke, nil
 	}
 
-	fmt.Println("waiting on poke " + poke.ID)
 	poke.Cv.L.Lock()
+	//fmt.Println("waiting on poke " + poke.ID)
 	poke.Cv.Wait()
+	poke.Cv.UnLock()
 	return poke, nil
 }
 
