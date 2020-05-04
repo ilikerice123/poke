@@ -15,10 +15,10 @@ import leds
 import api
 
 ID_FILE = 'poke.id'
-poke_id = ''
+poke_id = None
 
 def wait():
-    p_id = get_id()
+    p_id = get_id(poke_id)
     if(p_id == ''):
         return States.Wifi
     
@@ -32,8 +32,8 @@ def wait():
 def flash():
     return States.Wait
 
-def get_id():
-    if(poke_id == ''):
+def get_id(poke_id):
+    if(poke_id is not None):
         return poke_id
 
     try:
@@ -54,7 +54,7 @@ def get_id():
         file.write(poke_id)
         print("done setting id")
         file.close()
-        return new_id
+        return poke_id
 
 if(len(sys.argv) < 1):
     tl = Timeloop()

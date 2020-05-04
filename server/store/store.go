@@ -78,6 +78,7 @@ func WaitPoke(id string) (*Poke, *Err) {
 		return poke, nil
 	}
 
+	poke.Cv.L.Lock()
 	poke.Cv.Wait()
 	return poke, nil
 }
