@@ -74,4 +74,5 @@ Server API:
 #### TODO:
 - refactor api.py in tandem with logic.py to be more legible, better error handling
 - remove unnecessary prints in pi script
-
+- make react native app
+- make RGB circuit
