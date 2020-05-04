@@ -73,7 +73,5 @@ Server API:
 
 #### TODO:
 - refactor api.py in tandem with logic.py to be more legible, better error handling
-- refactor the way poke_id is assigned (refactor out of globa var?) *
-- fix not found errors on go server *
 - remove unnecessary prints in pi script
 
