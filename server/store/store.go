@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -59,6 +60,7 @@ func SendPoke(id string) *Err {
 		return &Err{Msg: "id not found", Code: NotFound}
 	}
 
+	fmt.Println("broadcasting on poke " + poke.ID)
 	poke.Cv.Broadcast()
 	poke.Poked = true
 	time.AfterFunc(2*time.Second, func() {
@@ -78,6 +80,7 @@ func WaitPoke(id string) (*Poke, *Err) {
 		return poke, nil
 	}
 
+	fmt.Println("waiting on poke " + poke.ID)
 	poke.Cv.L.Lock()
 	poke.Cv.Wait()
 	return poke, nil

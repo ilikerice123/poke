@@ -22,7 +22,6 @@ def wait():
     if(p_id == ''):
         return States.Wifi
     
-    print("polling poke with id " + p_id)
     resp = api.poll_poke(p_id)
     if(resp['status'] == api.CONNECTION_ERROR):
         return States.Wifi
