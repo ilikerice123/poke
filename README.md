@@ -76,3 +76,4 @@ Server API:
 - remove unnecessary prints in pi script
 - make react native app
 - make RGB circuit
+- add check for internet connection when aws server is unreachable
