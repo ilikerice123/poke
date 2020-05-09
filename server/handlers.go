@@ -13,7 +13,7 @@ import (
 //NewDevice creates a new poke device
 func NewDevice(w http.ResponseWriter, r *http.Request) {
 	poke := store.NewPoke()
-	writeJSON(poke, w)
+	writeJSON(w, poke)
 }
 
 //PokeDevice pokes a device
@@ -25,7 +25,7 @@ func PokeDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(map[string]interface{}{"status": "ok"}, w)
+	writeJSON(w, map[string]interface{}{"status": "ok"})
 }
 
 //CheckDevice checks a device for poke
@@ -34,9 +34,10 @@ func CheckDevice(w http.ResponseWriter, r *http.Request) {
 	poke, err := store.WaitPoke(id)
 	if err != nil {
 		handleError(w, err)
+		return
 	}
 
-	writeJSON(poke, w)
+	writeJSON(w, poke)
 }
 
 //ListDevices lists all the devices
@@ -46,17 +47,29 @@ func ListDevices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ids := store.ListIDs()
-	writeJSON(map[string]interface{}{"ids": ids}, w)
+	writeJSON(w, map[string]interface{}{"ids": ids})
+}
+
+//ActivateDevice activates a poke device given a 6 digit numeric string
+func ActivateDevice(w http.ResponseWriter, r *http.Request) {
+	code := mux.Vars(r)["code"]
+	poke, err := store.ActivatePoke(code)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+
+	writeJSON(w, poke)
 }
 
 func handleError(w http.ResponseWriter, err *store.Err) {
 	fmt.Println("Handling error")
 	switch err.Code {
 	case store.NotFound:
-		writeJSON(map[string]interface{}{"status": "device not found"}, w)
+		writeJSON(w, map[string]interface{}{"status": "device not found"})
 		w.WriteHeader(http.StatusNotFound)
 	default:
-		writeJSON(map[string]interface{}{"status": "server error"}, w)
+		writeJSON(w, map[string]interface{}{"status": "server error"})
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -74,7 +87,7 @@ func basicAuth(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func writeJSON(object interface{}, w http.ResponseWriter) {
+func writeJSON(w http.ResponseWriter, object interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(object)
 }

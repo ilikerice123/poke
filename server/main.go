@@ -29,6 +29,7 @@ func main() {
 	deviceRouter := r.PathPrefix("/devices").Subrouter()
 	deviceRouter.HandleFunc("/{id}/poke", PokeDevice).Methods("POST")
 	deviceRouter.HandleFunc("/{id}/poke", CheckDevice).Methods("GET")
+	deviceRouter.HandleFunc("/{code}/activate", ActivateDevice).Methods("POST")
 	deviceRouter.HandleFunc("", NewDevice).Methods("POST")
 	deviceRouter.HandleFunc("", ListDevices).Methods("GET")
 	deviceRouter.HandleFunc("/", NewDevice).Methods("POST")

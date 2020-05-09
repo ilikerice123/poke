@@ -1,7 +1,7 @@
 import sys, serial, json
 
 bt_ser = serial.Serial(
-               port='/dev/ttyUSB0',
+               port='/dev/ttyUSB1',
                baudrate = 38400,
                parity=serial.PARITY_NONE,
                stopbits=serial.STOPBITS_ONE,

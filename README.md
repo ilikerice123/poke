@@ -71,6 +71,17 @@ Server API:
 }
 ```
 
+- `POST /device/:code/activate`
+```json
+{
+    "id": "<uuid>"
+}
+```
+```json
+{
+    "status": "device not found"
+}
+
 #### TODO:
 - refactor api.py in tandem with logic.py to be more legible, better error handling
 - remove unnecessary prints in pi script
