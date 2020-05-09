@@ -81,6 +81,16 @@ Server API:
 {
     "status": "device not found"
 }
+```
+
+- `GET /device/:code/activate`
+```json
+{
+    "id": "<uuid>",
+    "activated": "<true/false>"
+}
+```
+hangs until activated
 
 #### TODO:
 - refactor api.py in tandem with logic.py to be more legible, better error handling

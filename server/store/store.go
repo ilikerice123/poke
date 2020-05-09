@@ -30,11 +30,11 @@ func (err *Err) Error() string {
 
 //Poke used to store status
 type Poke struct {
-	ID        string     `json:"id"`
-	Cv        *sync.Cond `json:"-"`
-	Poked     bool       `json:"poke"`
-	Activated bool       `json:"-"`
-	Code      string     `json:"code"`
+	ID     string     `json:"id"`
+	Cv     *sync.Cond `json:"-"`
+	Poked  bool       `json:"poke"`
+	Active bool       `json:"-"`
+	Code   string     `json:"code"`
 }
 
 //PokeStore stores pokes
@@ -53,11 +53,11 @@ func Init() {
 //NewPoke creates a new PokeStore, and sets a timeout logic
 func NewPoke() *Poke {
 	poke := &Poke{
-		ID:        uuid.New().String(),
-		Cv:        sync.NewCond(&sync.Mutex{}),
-		Poked:     false,
-		Activated: false,
-		Code:      randCode(),
+		ID:     uuid.New().String(),
+		Cv:     sync.NewCond(&sync.Mutex{}),
+		Poked:  false,
+		Active: false,
+		Code:   randCode(),
 	}
 	pokeStore[poke.ID] = poke
 	tempStore[poke.Code] = poke
@@ -68,18 +68,36 @@ func NewPoke() *Poke {
 //ActivatePoke activates a poke and returns the uuid
 func ActivatePoke(code string) (*Poke, *Err) {
 	poke := tempStore[code]
-	if poke == nil {
+	if poke == nil || poke.Active {
 		return nil, &Err{Msg: "code not found", Code: NotFound}
 	}
-	poke.Activated = true
+	poke.Active = true
+	poke.Cv.L.Lock()
+	poke.Cv.Broadcast()
+	poke.Cv.L.Unlock()
 	delete(tempStore, code)
+	return poke, nil
+}
+
+//WaitActivation waits for a poke to be activated
+func WaitActivation(id string) (*Poke, *Err) {
+	poke := pokeStore[id]
+	if poke == nil {
+		return nil, &Err{Msg: "id not found", Code: NotFound}
+	}
+	poke.Cv.L.Lock()
+	defer poke.Cv.L.Unlock()
+	if poke.Active {
+		return poke, nil
+	}
+	poke.Cv.Wait()
 	return poke, nil
 }
 
 //SendPoke sends a poke to the id
 func SendPoke(id string) *Err {
 	poke := pokeStore[id]
-	if poke == nil {
+	if poke == nil || !poke.Active {
 		return &Err{Msg: "id not found", Code: NotFound}
 	}
 
@@ -95,7 +113,7 @@ func SendPoke(id string) *Err {
 //WaitPoke blocks until the specified id receives a poke
 func WaitPoke(id string) (*Poke, *Err) {
 	poke := pokeStore[id]
-	if poke == nil {
+	if poke == nil || !poke.Active {
 		return nil, &Err{Msg: "id not found", Code: NotFound}
 	}
 	if poke.Poked == true {
@@ -124,7 +142,7 @@ func ListIDs() []string {
 //and the poke is not activated
 func timeoutPoke(id string) {
 	poke := pokeStore[id]
-	if poke == nil || poke.Activated {
+	if poke == nil || poke.Active {
 		//lol it shouldn't be nil but whatever
 		return
 	}

@@ -40,6 +40,18 @@ func CheckDevice(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, poke)
 }
 
+//WaitActivation waits for a poke device to be activated
+func WaitActivation(w http.ResponseWriter, r *http.Request) {
+	code := mux.Vars(r)["code"]
+	poke, err := store.WaitActivation(code)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+
+	writeJSON(w, poke)
+}
+
 //ListDevices lists all the devices
 func ListDevices(w http.ResponseWriter, r *http.Request) {
 	if !basicAuth(w, r) {
