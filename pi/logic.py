@@ -49,7 +49,7 @@ def new_id():
     if(res['status'] == api.CONNECTION_ERROR):
         return States.Wifi
     tentative_id = res['body']['id']
-    bluetooth.send_bt_data({'command': 'verification_code', 'body': res['body']})
+    bluetooth.send_bt_data(json.dumps({'command': 'verification_code', 'body': res['body']}))
 
     res = api.wait_activation(tentative_id)
     if(res['status'] == api.CONNECTION_ERROR):
