@@ -49,6 +49,7 @@ def new_id():
     if(res['status'] == api.CONNECTION_ERROR):
         return States.Wifi
     tentative_id = res['body']['id']
+    bluetooth.send_bt_data({'command': 'verification_code', 'body': res['body']})
 
     res = api.wait_activation(tentative_id)
     if(res['status'] == api.CONNECTION_ERROR):
@@ -57,7 +58,7 @@ def new_id():
         return States.Setup #try again, some error must've occurred
     
     # success, now we can save the id
-    poke_id = res['body']['id']
+    poke_id = tentative_id
     os.remove(ID_FILE)
     file = open(ID_FILE, mode='w')
     file.write(poke_id)
