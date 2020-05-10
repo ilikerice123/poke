@@ -67,7 +67,7 @@ def new_id():
 
 state = States.Wifi
 if(wifi.has_wifi()):
-    state = States.Wait
+    state = States.Setup
 next_state = state
 
 while True:
