@@ -2,5 +2,6 @@ import enum
 
 class States(enum.Enum):
     Wifi = 1
-    Wait = 2
-    Flash = 3
+    Setup = 2
+    Wait = 3
+    Flash = 4

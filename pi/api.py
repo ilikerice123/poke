@@ -2,43 +2,49 @@ import requests
 import sys
 import time
 
+# returns either error, or retries until it succeeds
+
 SERVER_FILE='server.txt'
 file = open(SERVER_FILE, mode='r')
 SERVER_URL = file.read()
 
-GENERIC_ERROR = 'err'
 CONNECTION_ERROR = 'no connection'
 
-def request_id():
-    try:
-        print("trying " + SERVER_URL + '/devices')
-        r = requests.post(SERVER_URL + '/devices')
-        return {'status': r.status_code, 'id': r.json().get('id', None)}
-    except requests.ConnectionError:
-        print(sys.exc_info())
-        # assume something wrong with internet connection
-        return {'status': CONNECTION_ERROR, 'id': None}
-    except:
-        return {'status': GENERIC_ERROR, 'id': None}
+GET = 'get'
+POST = 'post'
+PUT = 'put'
+DELETE = 'delete'
+methods = {
+    GET: requests.get,
+    POST: requests.post,
+    PUT: requests.put,
+    DELETE: requests.delete
+}
+
+# requests an id
+def request_new():
+    return req('/devices', POST)
+
+# waits for a poke to be activated
+def wait_activation(p_id):
+    return req('/devices/' + p_id + '/activate', GET)
 
 # when this returns, either connection error, or poke is true
 def poll_poke(p_id):
-    request = {}
-    while((request.get('poke', None) != True) and (request.get('status', None) != CONNECTION_ERROR)):
+    return req('/devices/' + p_id + '/poke', GET)
+
+def req(url, method, body=None):
+    while True:
         try:
-            # no timeout
-            print("checking poke at " + SERVER_URL + '/devices/' + p_id + '/poke')
-            r = requests.get(SERVER_URL + '/devices/' + p_id + '/poke', timeout=None)
-            print("received response!")
-            request = r.json()
-            request['status'] = 200
+            print("trying " + SERVER_URL + url)
+            r = methods[method](SERVER_URL + url, data=body)
+            return {'status': r.status_code, 'body': r.json()}
         except requests.ConnectionError:
             print(sys.exc_info())
             # assume something wrong with internet connection
-            return {'status': CONNECTION_ERROR, 'poke': None}
+            return {'status': CONNECTION_ERROR, 'body': None}
         except:
-            print(sys.exc_info())
-            time.sleep(1)
-
-    return request
+            # so we don't bombard the server is something is wrong
+            time.sleep(1) 
+            continue
 

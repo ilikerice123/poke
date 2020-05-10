@@ -32,8 +32,8 @@ func (err *Err) Error() string {
 type Poke struct {
 	ID     string     `json:"id"`
 	Cv     *sync.Cond `json:"-"`
-	Poked  bool       `json:"poke"`
-	Active bool       `json:"-"`
+	Poked  bool       `json:"poked"`
+	Active bool       `json:"active"`
 	Code   string     `json:"code"`
 }
 
@@ -101,8 +101,10 @@ func SendPoke(id string) *Err {
 		return &Err{Msg: "id not found", Code: NotFound}
 	}
 
-	poke.Cv.Broadcast()
 	poke.Poked = true
+	poke.Cv.L.Lock()
+	poke.Cv.Broadcast()
+	poke.Cv.L.Unlock()
 	time.AfterFunc(2*time.Second, func() {
 		poke.Poked = false
 	})
@@ -146,6 +148,9 @@ func timeoutPoke(id string) {
 		//lol it shouldn't be nil but whatever
 		return
 	}
+
+	//broadcast to anyone waiting on activation
+	poke.Cv.Broadcast()
 	delete(pokeStore, id)
 	delete(tempStore, poke.Code)
 }

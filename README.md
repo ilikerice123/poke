@@ -93,8 +93,6 @@ Server API:
 hangs until activated
 
 #### TODO:
-- refactor api.py in tandem with logic.py to be more legible, better error handling
 - remove unnecessary prints in pi script
-- make react native app
-- make RGB circuit
 - add check for internet connection when aws server is unreachable
+- fix returning 200 when device is not found
