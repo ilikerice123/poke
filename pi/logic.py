@@ -59,7 +59,11 @@ def new_id():
     
     # success, now we can save the id
     poke_id = tentative_id
-    os.remove(ID_FILE)
+    try:
+        os.remove(ID_FILE)
+    except FileNotFoundError:
+        print('hello')
+
     file = open(ID_FILE, mode='w')
     file.write(poke_id)
     file.close()

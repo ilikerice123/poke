@@ -1,45 +1,68 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ActivityIndicator, ToastAndroid } from 'react-native';
+import { StyleSheet, View, TextInput, Button, ActivityIndicator, ToastAndroid, Text } from 'react-native';
+//import AsyncStorage from '@react-native-community/async-storage';
+import { AsyncStorage } from 'react-native'
 
 const SERVER_URL = 'http://ec2-54-245-184-188.us-west-2.compute.amazonaws.com:8000'
 export default function PokePage() {
-    const [id, setId] = React.useState('')
+    const [code, setCode] = React.useState('')
+    const [id, setId] = React.useState('loading...')
+    loadId()
+        .then((value) => {
+            setId(value || "error occured")
+        })
+        .catch(() => {
+            setId("error occurred")
+        })
     return (
         <View style={styles.container}>
+            <Text>The current id for this poke is {id}</Text>
             <TextInput
                 multiline
-                onChangeText={setId}
-                value={id}
-                placeholder={'enter id of poke light'}
+                onChangeText={setCode}
+                value={code}
+                placeholder={'Enter verification code of light'}
             />
-            <LoadButton
-                id={id}
-                // onPress={() => sendPoke(id)}
-                title="Send Poke"
+            <AsyncButton
+                url={`${SERVER_URL}/devices/${code}/activate`}
+                method={'POST'}
+                afterRun={(data) => {
+                    storeId(data.id)
+                    setId(data.id)
+                }}
+                title={'verify'}
+            />
+            <AsyncButton
+                url={`${SERVER_URL}/devices/${id}/poke`}
+                method={'POST'}
+                title={'send poke'}
                 color={'pink'}
             />
         </View>
     );
 }
 
-function LoadButton(props: any){
+function AsyncButton(props: {url: string, method: string, afterRun?: (res : any) => any, title?: string, color?: string}){
     const [loading, setLoading] = React.useState(false) 
 
     return(
         loading ? 
             <ActivityIndicator animating={loading} size="large" color='#FFC0CB' /> :
-            <Button 
-                onPress={() => sendPoke(props.id, setLoading)}
-                title={'Send Poke'}
-                color={'pink'}
+            <Button
+                onPress={() => sendRequest(props.url, props.method, setLoading, props.afterRun)}
+                title={props.title || 'button'}
+                color={props.color}
             />
     )
 }
 
-function sendPoke(id: String, toggle: (b: boolean) => any){
+function sendRequest(url: string, method: string, toggle: (b: boolean) => any, afterRun?: (res : any) => any){
     toggle(true)
-    fetch(`${SERVER_URL}/devices/${id}/poke`, {method: 'POST'})
+    fetch(url, {method: method})
         .then((response) => {
+            if(afterRun){
+                afterRun(response)
+            }
             toggle(false)
             ToastAndroid.showWithGravity("Successfully sent poke", ToastAndroid.SHORT, ToastAndroid.CENTER)
         })
@@ -47,7 +70,22 @@ function sendPoke(id: String, toggle: (b: boolean) => any){
             toggle(false)
             ToastAndroid.showWithGravity("Error occurred", ToastAndroid.SHORT, ToastAndroid.CENTER)
         })
-    return id
+}
+
+async function loadId() {
+    try {
+        return await AsyncStorage.getItem("id")
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+async function storeId(value: string){
+    try {
+        return await AsyncStorage.setItem("id", value)
+    } catch(e) {
+        console.log(e)
+    }
 }
 
 const styles = StyleSheet.create({
@@ -63,5 +101,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFC0CB',
         borderColor: 'gray',
         borderWidth: 3
-    }
+    },
 });

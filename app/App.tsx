@@ -1,20 +1,19 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
-import PokePage from './components/PokePage'
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import PokePage from './components/PokePage';
+import SetupPage from './components/SetupPage';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <PokePage />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Setup" component={SetupPage} />
+        <Tab.Screen name="Send Poke" component={PokePage} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
