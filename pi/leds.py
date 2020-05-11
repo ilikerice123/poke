@@ -12,6 +12,7 @@ led_pins = [RED_PIN, BLUE_PIN, GREEN_PIN]
 curr_led = 2
 
 subprocess.run(['sudo', './pigpio.sh'])
+time.sleep(0.1)
 pi = pigpio.pi()
 
 def inc(scale):
