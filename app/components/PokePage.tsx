@@ -27,8 +27,8 @@ export default function PokePage() {
                 url={`${SERVER_URL}/devices/${code}/activate`}
                 method={'POST'}
                 afterRun={(data) => {
-                    storeId(data.id)
-                    setId(data.id)
+                    //ToastAndroid.showWithGravity(JSON.stringify(data), ToastAndroid.LONG, ToastAndroid.BOTTOM)
+                    storeId(data.id, setId)
                 }}
                 title={'verify'}
             />
@@ -61,28 +61,29 @@ function sendRequest(url: string, method: string, toggle: (b: boolean) => any, a
     fetch(url, {method: method})
         .then((response) => {
             if(afterRun){
-                afterRun(response)
+                response.json().then((data) => afterRun(data))
             }
             toggle(false)
-            ToastAndroid.showWithGravity("Successfully sent poke", ToastAndroid.SHORT, ToastAndroid.CENTER)
         })
         .catch((error) => {
             toggle(false)
-            ToastAndroid.showWithGravity("Error occurred", ToastAndroid.SHORT, ToastAndroid.CENTER)
         })
 }
 
 async function loadId() {
     try {
-        return await AsyncStorage.getItem("id")
+        return await AsyncStorage.getItem("@id")
     } catch(e) {
         console.log(e)
     }
 }
 
-async function storeId(value: string){
+async function storeId(value: string, refresh?: (value: string) => any){
     try {
-        return await AsyncStorage.setItem("id", value)
+        await AsyncStorage.setItem("@id", value)
+        if(refresh){
+            refresh(value)
+        }
     } catch(e) {
         console.log(e)
     }
