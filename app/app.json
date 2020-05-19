@@ -22,7 +22,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.charlesbai.poke.app"
+    },
+    "android": {
+      "package": "com.charlesbai.poke.app"
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
   }
 }
