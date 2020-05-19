@@ -1,30 +1,8 @@
 import sys, serial, json
 import bluetooth
+import subprocess
 
-# bt_ser = serial.Serial(
-#                port='/dev/ttyUSB0',
-#                baudrate = 38400,
-#                parity=serial.PARITY_NONE,
-#                stopbits=serial.STOPBITS_ONE,
-#                bytesize=serial.EIGHTBITS,
-#                timeout=5
-#            )
-
-# # sends json data
-# def send_bt_data(data):
-#     bt_ser.write(str.encode(data))
-
-# # blocks until json command received, and returns stuff
-# def recv_bt_data():
-#     while True:
-#         response = {}
-#         try:
-#             json_command = bt_ser.readline().decode()
-#             response = json.loads(json_command)
-#         except:
-#             continue
-#         if response.get('command', '') is not '':
-#             return response
+subprocess.run(['sudo', 'hciconfig', 'hci0', 'piscan'])
 
 if __name__ == '__main__':
     server_sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
@@ -41,6 +19,3 @@ if __name__ == '__main__':
     
     client_sock.close()
     server_sock.close()
-
-
-
