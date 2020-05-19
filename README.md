@@ -1,8 +1,13 @@
 ## Setup
 
 #### Hardware
-connect bt
+Raspberry Pi Zero W
+Phone
 
+#### Setup
+install pigpio to root
+`sudo apt install python3-pip`
+<!-- `sudo apt-get install rpi.gpio` -->
 
 #### WIFI Connection Script
 - `sudo ifconfig wlan0 up`
