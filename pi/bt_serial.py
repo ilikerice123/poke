@@ -1,4 +1,3 @@
-import sys, json
 import bluetooth
 import subprocess
 
@@ -14,11 +13,11 @@ def init_socket():
         client_sock,address = server_sock.accept()
         print("Accepted connection from " + str(address))
 
-def send(json):
+def send(msg):
     global client_sock
     try:
         init_socket()
-        client_sock.send(json.encode())
+        client_sock.send(msg.encode())
     except:
         client_sock.close()
         client_sock = None

@@ -1,16 +1,12 @@
-import os, sys, time, json
+import os, sys, json
 import serial
 
 import requests
 import subprocess
-import time
-
-from timeloop import Timeloop
-from datetime import timedelta
 
 from state import States
 import wifi_script as wifi
-import bt_serial as bluetooth
+import bt_serial as bt
 import leds
 import api
 
@@ -49,7 +45,7 @@ def new_id():
     if(res['status'] == api.CONNECTION_ERROR):
         return States.Wifi
     tentative_id = res['body']['id']
-    bluetooth.send_bt_data(json.dumps({'command': 'verification_code', 'body': res['body']}))
+    bt.send(json.dumps({'command': 'verification_code', 'body': res['body']}))
 
     res = api.wait_activation(tentative_id)
     if(res['status'] == api.CONNECTION_ERROR):
