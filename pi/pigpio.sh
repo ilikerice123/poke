@@ -1,2 +1,2 @@
 sudo killall pigpiod
-sudo $HOME/pigpio-master/./pigpiod
+sudo /home/pi/pigpio-master/./pigpiod
