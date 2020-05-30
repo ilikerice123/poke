@@ -1,5 +1,4 @@
 import os, sys, json
-import serial
 
 import requests
 import subprocess

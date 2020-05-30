@@ -6,7 +6,7 @@ import time
 
 SERVER_FILE='server.txt'
 file = open(SERVER_FILE, mode='r')
-SERVER_URL = file.read()
+SERVER_URL = file.read().strip()
 
 CONNECTION_ERROR = 'no connection'
 
