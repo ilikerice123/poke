@@ -26,10 +26,11 @@ def connect():
             print('error scanning!')
             return False
         request = json.dumps({'command': 'wifi_list', 'ssids': [ssid.strip() for ssid in stdout.decode().split("\n")]})
-        print(request)
-        bluetooth.send_bt_data(request)
+        bluetooth.send(request)
         print('waiting for response from bt')
-        response = bluetooth.recv_bt_data()
+        response = bluetooth.recv()
+        if(response is None):
+            response = {}
     
     proc1 = subprocess.Popen(['wpa_passphrase', response['ssid'], response['password']], stdout=subprocess.PIPE)
     subprocess.Popen(['sudo', 'tee', WPA_FILE], stdin=proc1.stdout)
@@ -44,9 +45,8 @@ def connect():
         print(stderr)
         return False
 
-    completed_proc = subprocess.run(['sudo', 'dhclient', 'wlan0'])
-    if(completed_proc.returncode == 0):
-        return True
+    subprocess.run(['sudo', 'dhclient', 'wlan0'])
+    return True
 
 def has_wifi():
     proc = subprocess.run(['./check_wifi.sh'], stdout=subprocess.PIPE)

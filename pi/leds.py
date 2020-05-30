@@ -14,6 +14,8 @@ subprocess.run(['sudo', './pigpio.sh'])
 time.sleep(0.1)
 pi = pigpio.pi()
 
+# inc represents oen tick of the led light
+# scale = how bright the led should be: 0 (off) - 255 (brightest)
 def inc(scale):
     global curr_led
     if(led_vals[curr_led] == 255):
