@@ -7,17 +7,12 @@ Phone
 #### Setup
 install pigpio to root
 `sudo apt install python3-pip`
-<!-- `sudo apt-get install rpi.gpio` -->
+import python libraries
+make `server.txt` file
+install android sdk, accept licenses
+install java 8 sdk (a huge pain)
+change gradle settings to build
 
-#### WIFI Connection Script
-- `sudo ifconfig wlan0 up`
-- `sudo iwlist wlan0 scan | grep ESSID` -> send this as json via bt
-- wait for a response from BT with command wifi
-- `wpa_passphrase <ssid> <password> | sudo tee wifi.conf`
-- `sudo wpa_supplicant -c /etc/wpa_supplicant.conf -i wlan0` -> run in background and monitor this process
-- `sudo dhclient wlan0` get ip address
-
-SHOULD BE CONNECTED TO THE INTERNET NOW
 
 ## files/
 used to store random files
@@ -99,5 +94,4 @@ hangs until activated
 
 #### TODO:
 - remove unnecessary prints in pi script
-- add check for internet connection when aws server is unreachable
 - fix returning 200 when device is not found

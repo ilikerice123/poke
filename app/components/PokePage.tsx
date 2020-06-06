@@ -27,7 +27,6 @@ export default function PokePage() {
                 url={`${SERVER_URL}/devices/${code}/activate`}
                 method={'POST'}
                 afterRun={(data) => {
-                    //ToastAndroid.showWithGravity(JSON.stringify(data), ToastAndroid.LONG, ToastAndroid.BOTTOM)
                     storeId(data.id, setId)
                 }}
                 title={'verify'}
